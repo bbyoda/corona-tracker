@@ -30,14 +30,22 @@ public class CoronaVirusDataService {
     @PostConstruct
     @Scheduled(cron = "* * 1 * * *")
     public void fetchData() throws IOException, InterruptedException {
+        //List of all stats
         List<LocationStats> newStats = new ArrayList<>();
+
         HttpClient client = HttpClient.newHttpClient();
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(DATA_URL))
                 .build();
+
         HttpResponse<String> httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+        System.out.println("Response code: " + httpResponse.statusCode());
+
         StringReader in = new StringReader(httpResponse.body());
+
+        //Stream
         Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(in);
 
         for (CSVRecord record : records) {
